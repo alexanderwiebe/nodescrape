@@ -29,7 +29,27 @@ app.configure('development', function(){
 });
  
 app.get('/nodetube', function(req, res){
-  //Tell the request that we want to fetch youtube.com, send the results to a callback function
+  var myHtml = ''
+  request('http://www.theweathernetwork.com/14-day-weather-trend/canada/saskatchewan/regina', 
+    function (error, response, html) { 
+      if (!error && response.statusCode == 200) { 
+        console.log(html);
+        var $ = cheerio.load(html);
+        var scrapedInfo = [];
+        $('.trends-table tr').each(function(i, element){
+          if(i !== 0){
+            scrapedInfo[i] = {
+              date:   $(this).find('td.date').html(),
+              high:   $(this).find('td.high span').html(),
+              low:    $(this).find('td.low span').html(),
+              pop:    $(this).find('td.pop strong').html()
+            };
+          }
+        });
+        res.send('worked');
+      } 
+    }
+  );
 });
  
 http.createServer(app).listen(app.get('port'), function(){
