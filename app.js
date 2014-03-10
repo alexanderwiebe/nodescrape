@@ -35,22 +35,31 @@ app.get('/nodetube', function(req, res){
   scripts: ["http://code.jquery.com/jquery.js"],
   done: function (errors, window) {
     var $ = window.$;
-console.log('* * * * * * * * * *');
-var count = 0;
-var date = new Date();
-$("entry").slice(2).each(function(){
-var text = $(this).find('summary').html();
-text = text.replace(/minus /gi, '-');
-text = text.replace(/plus /gi, '+');
-
-console.log('*');
-console.log('high: ' + text.match(/high .*?\d+/gi));
-console.log('low: ' + text.match(/(low )|(wind chill ).*?\d+/gi));
-var day = $(this).find('title').html().match(/.*?:/gi)
-console.log('date: ' + now() + ' plus ' + count + ' days');
-console.log('info: ' + text);
-count++;
-});
+    console.log('* * * * * * * * * *');
+    var count = 0;
+    var date = new Date();
+    $("entry").slice(1).each(function(){
+      var text = $(this).find('summary').html();
+      text = text.replace(/minus /gi, '-');
+      text = text.replace(/plus /gi, '+');
+      if(count===0){
+        console.log('*current temp*');
+        var results = text.match(/\d+:\d+.*?<br\/>/);
+        var longDate = results[0].substring(0,results[0].length-6);
+        longDate = longDate.substring(longDate.indexOf('T')+2);
+        var timeDate = results[0].substring(0,results[0].indexOf('C')-1);
+        var tempDate = new Date(longDate + ' ' + timeDate);
+        console.log('date: ' + tempDate);
+      }else{
+        console.log('*');
+        console.log('high: ' + text.match(/high .*?\d+/gi));
+        console.log('low: ' + text.match(/(low )|(wind chill ).*?\d+/gi));
+        var day = $(this).find('title').html().match(/.*?:/gi)
+        console.log('date: ' + new Date().getDate() + ' plus ' + count + ' days');
+        console.log('info: ' + text);
+      }
+      count++;
+    });
   }
   });
 
